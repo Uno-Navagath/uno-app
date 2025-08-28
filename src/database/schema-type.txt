@@ -1,0 +1,62 @@
+This project is a Next.js app using Supabase with Drizzle ORM (Postgres).
+Domain: Multiplayer game system → Games have Hosts, Participants, Rounds, and Scores.
+
+--- SCHEMA ---
+
+players {
+  id: uuid PK
+  firebaseId: string (required)
+  name: string
+  email: string
+  imageUrl: string?
+  createdAt: timestamp
+  updatedAt: timestamp
+}
+
+games {
+  id: uuid PK
+  hostId: uuid → players.id (nullable, set null on delete)
+  status: enum('active', 'finished') DEFAULT 'active'
+  createdAt: timestamp
+  updatedAt: timestamp
+}
+
+participants {
+  id: uuid PK
+  gameId: uuid → games.id (cascade on delete)
+  playerId: uuid → players.id (cascade on delete)
+}
+
+rounds {
+  id: uuid PK
+  gameId: uuid → games.id (cascade on delete)
+  createdAt: timestamp
+  updatedAt: timestamp
+}
+
+scores {
+  id: serial PK
+  participantId: uuid → participants.id (cascade on delete)
+  roundId: uuid → rounds.id (cascade on delete)
+  value: int
+  createdAt: timestamp
+  updatedAt: timestamp
+}
+
+--- RELATIONSHIPS ---
+- Player → Games: 1 player can host many games (games.hostId).
+- Player → Participants: 1 player can join many games as participant.
+- Game → Participants: 1 game has many participants; each participant links to one player.
+- Game → Rounds: 1 game has many rounds.
+- Round → Scores: 1 round has many scores; each score belongs to a participant → player.
+
+--- TYPE STRUCTURES ---
+- GameDetails = Game & { host: Player, participants: ParticipantWithPlayer[], rounds: RoundWithScores[] }
+- ParticipantWithPlayer = Participant & { player: Player }
+- RoundWithScores = Round & { scores: ScoreWithParticipant[] }
+- ScoreWithParticipant = Score & { participant: ParticipantWithPlayer }
+
+---
+
+Remember: this is **Drizzle ORM with relations()** in Postgres.
+Use `db.query.games.findMany({ with: { host, participants.player, rounds.scores.participant.player } })` once relations are defined.
