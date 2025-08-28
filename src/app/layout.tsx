@@ -16,6 +16,8 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
     title: "UNO",
     description: "UNO Score Board",
+    themeColor: "#000000",
+    manifest: '/manifest.json',
 };
 
 export default function RootLayout({
