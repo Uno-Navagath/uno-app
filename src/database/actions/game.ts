@@ -1,6 +1,14 @@
 import {db} from "@/database/client";
 import {and, eq} from "drizzle-orm";
-import {Game as BaseGame, GameDetails as Game, games, Participant, participants, scores} from "@/database/schema";
+import {
+    Game as BaseGame,
+    GameDetails,
+    GameDetails as Game,
+    games,
+    Participant,
+    participants,
+    scores
+} from "@/database/schema";
 
 export const createGame = async (hostId: string, participantIds: string[]): Promise<BaseGame> => {
     const [game] = await db
@@ -83,7 +91,7 @@ export const removePlayerFromGame = async (
         );
 };
 
-export const getGameById = async (id: string): Promise<Game | undefined> => {
+export const getGameById = async (id: string): Promise<GameDetails | undefined> => {
     return db.query.games.findFirst({
         where: eq(games.id, id),
         with: {
@@ -97,7 +105,11 @@ export const getGameById = async (id: string): Promise<Game | undefined> => {
                 with: {
                     scores: {
                         with: {
-                            participant: true
+                            participant: {
+                                with: {
+                                    player: true,
+                                },
+                            }
                         }
                     }
                 }
@@ -113,7 +125,7 @@ export const getGames = async (
     status?: GameStatus,
     dateFilter?: GameDateFilter,
     limit?: number
-): Promise<Game[]> => {
+): Promise<GameDetails[]> => {
     return db.query.games.findMany({
         where: (games, { and, eq, gte }) => {
             const conditions = [];
@@ -148,7 +160,6 @@ export const getGames = async (
             participants: {
                 with: {
                     player: true,
-                    scores: true, // ✅ optional (since participants has scores in relations.ts)
                 },
             },
             rounds: {
@@ -157,7 +168,7 @@ export const getGames = async (
                         with: {
                             participant: {
                                 with: {
-                                    player: true, // ✅ must go through participant
+                                    player: true,
                                 },
                             },
                         },

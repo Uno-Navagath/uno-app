@@ -8,7 +8,7 @@ import {Button} from "@/components/ui/button";
 
 const ActiveGame = ({game}: { game: GameDetails }) => {
     const player = usePlayerStore.getState().player;
-    const isHost = (player && player.id === game.host.id) ?? false;
+    const isHost = (player && player.id === game.host?.id) ?? false;
     // const isHost = true;
     return (
         <div className="p-4 space-y-6 max-w-3xl mx-auto">

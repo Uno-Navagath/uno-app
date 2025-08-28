@@ -23,4 +23,4 @@ export const participants = pgTable('participants', {
 export type Participant = typeof participants.$inferSelect;
 export type ParticipantWithPlayer = Participant & { player: Player };
 export type Game = typeof games.$inferSelect;
-export type GameDetails = Game & { host: Player, participants: ParticipantWithPlayer[], rounds: RoundWithScores[] };
+export type GameDetails = Game & { host: Player | null, participants: ParticipantWithPlayer[], rounds: RoundWithScores[] };

@@ -63,7 +63,7 @@ export function GameItemCard({game}: { game: GameDetails }) {
                 {/* HEADER */}
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
                     <span className="text-xs text-muted-foreground">Game #{game.id}</span>
-                    <span className="text-xs text-muted-foreground">Host {game.host.name}</span>
+                    <span className="text-xs text-muted-foreground">Host {game.host?.name ?? "Unknown"}</span>
                 </CardHeader>
 
                 {/* BODY */}
